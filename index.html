@@ -1,0 +1,468 @@
+
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>3학년 칭찬스티커판</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+        /* 간단한 커스텀 스타일 추가 */
+        .text-shadow {
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+        /* 스크롤바 디자인 */
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 8px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 10px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-indigo-300 to-purple-400 min-h-screen p-2 sm:p-5">
+    <div id="app-container" class="max-w-7xl mx-auto bg-white rounded-2xl shadow-2xl overflow-hidden">
+        <!-- Header -->
+        <header class="bg-gradient-to-r from-red-500 to-orange-400 text-white p-6 sm:p-8 text-center">
+            <h1 class="text-3xl sm:text-4xl font-bold mb-2 text-shadow">🌟 3학년 칭찬스티커판 🌟</h1>
+            <p class="text-base sm:text-lg text-red-100">매달 최고의 반과 학생을 찾아보세요!</p>
+        </header>
+
+        <!-- Stats -->
+        <div class="flex justify-around bg-gray-100 p-4 sm:p-5 border-b-2 border-gray-200">
+            <div class="text-center p-4 bg-white rounded-xl shadow-md min-w-[120px] sm:min-w-[150px]">
+                <div id="totalStudents" class="text-3xl font-bold text-red-500">0</div>
+                <div class="text-sm text-gray-600 mt-1">전체 학생 수</div>
+            </div>
+            <div class="text-center p-4 bg-white rounded-xl shadow-md min-w-[120px] sm:min-w-[150px]">
+                <div id="totalStickers" class="text-3xl font-bold text-red-500">0</div>
+                <div class="text-sm text-gray-600 mt-1">전체 스티커 수</div>
+            </div>
+            <div class="text-center p-4 bg-white rounded-xl shadow-md min-w-[120px] sm:min-w-[150px]">
+                <div id="topClass" class="text-3xl font-bold text-red-500">-</div>
+                <div class="text-sm text-gray-600 mt-1">1등 반</div>
+            </div>
+        </div>
+
+        <!-- Top Performers -->
+        <div class="p-4 sm:p-6">
+            <div class="bg-gradient-to-r from-amber-400 to-orange-500 text-white p-6 rounded-2xl text-center shadow-lg">
+                <h3 class="mb-4 text-2xl font-bold">🏆 이달의 TOP 3 🏆</h3>
+                <div id="topPerformers" class="flex justify-center gap-4 sm:gap-8 flex-wrap">
+                    <div class="bg-white/20 p-4 rounded-lg">아직 기록이 없습니다</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Class Tabs -->
+        <div class="bg-gray-200 overflow-x-auto">
+            <nav id="classTabs" class="flex space-x-2 p-1"></nav>
+        </div>
+
+        <!-- Class Content Area -->
+        <main id="classContentArea" class="p-4 sm:p-6 bg-gray-50"></main>
+    </div>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        // --- DATA AND CONSTANTS ---
+        const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwbLZvOcMewFsJuGHtu8wpd4C63PoDOUmWc1k45tN7FdHTVrjoV23dH7nARp0u6_AFa4g/exec';
+        const studentsData = {
+          'class1': [
+            { number: 1, name: '간민준' }, { number: 2, name: '권예한' }, { number: 3, name: '김대한' }, 
+            { number: 4, name: '김서정' }, { number: 5, name: '김선율' }, { number: 6, name: '김승민' }, 
+            { number: 7, name: '김재원' }, { number: 8, name: '김정수' }, { number: 9, name: '김해원' }, 
+            { number: 10, name: '남궁건' }, { number: 11, name: '노현승' }, { number: 13, name: '백서율' }, 
+            { number: 14, name: '변성현' }, { number: 15, name: '송호근' }, { number: 16, name: '원상진' }, 
+            { number: 17, name: '유동건' }, { number: 18, name: '윤혜성' }, { number: 19, name: '이시윤' }, 
+            { number: 20, name: '정다검' }, { number: 21, name: '최근찬' }, { number: 22, name: '최시우' }, 
+            { number: 23, name: '최시훈' }, { number: 24, name: '추정우' }, { number: 25, name: '한준희' }, 
+            { number: 26, name: '허리원' }, { number: 27, name: '홍주호' }
+          ],
+          'class2': [
+            { number: 1, name: '강민재' }, { number: 2, name: '경덕규' }, { number: 3, name: '곽명석' }, 
+            { number: 4, name: '구교원' }, { number: 5, name: '권유빈' }, { number: 6, name: '김재웅' }, 
+            { number: 7, name: '김태수' }, { number: 8, name: '나승현' }, { number: 9, name: '노해일' }, 
+            { number: 10, name: '박건휘' }, { number: 11, name: '박송우' }, { number: 12, name: '송인엽' }, 
+            { number: 13, name: '안재홍' }, { number: 14, name: '윤서진' }, { number: 15, name: '이상준' }, 
+            { number: 16, name: '이수한' }, { number: 17, name: '이승현' }, { number: 18, name: '정우진' }, 
+            { number: 20, name: '지성정' }, { number: 21, name: '진연우' }, { number: 22, name: '차윤호' }, 
+            { number: 23, name: '차은찬' }, { number: 24, name: '최재우' }, { number: 25, name: '최호영' }, 
+            { number: 26, name: '하석주' }, { number: 27, name: '김동혁' }
+          ],
+          'class3': [
+            { number: 1, name: '길성호' }, { number: 2, name: '김민준' }, { number: 3, name: '김영준' }, 
+            { number: 4, name: '김재신' }, { number: 5, name: '남승찬' }, { number: 6, name: '문주환' }, 
+            { number: 7, name: '민정기' }, { number: 8, name: '박은찬' }, { number: 9, name: '박주혁' }, 
+            { number: 10, name: '손영철' }, { number: 11, name: '손정훈' }, { number: 12, name: '송민제' }, 
+            { number: 13, name: '심우주' }, { number: 14, name: '원준혁' }, { number: 15, name: '이낙연' }, 
+            { number: 16, name: '이하윤' }, { number: 17, name: '장성욱' }, { number: 18, name: '전도윤' }, 
+            { number: 19, name: '정명훈' }, { number: 20, name: '정서후' }, { number: 21, name: '정진섭' }, 
+            { number: 22, name: '주현우' }, { number: 23, name: '최민준' }, { number: 24, name: '최우진' }, 
+            { number: 25, name: '최인우' }, { number: 26, name: '한결' }
+          ],
+          'class4': [
+            { number: 1, name: '권지후' }, { number: 2, name: '김동후' }, { number: 3, name: '김민기' }, 
+            { number: 4, name: '김유래' }, { number: 5, name: '김주영' }, { number: 6, name: '김주환' }, 
+            { number: 7, name: '김준혁' }, { number: 8, name: '문정환' }, { number: 9, name: '박건호' }, 
+            { number: 10, name: '박민찬' }, { number: 11, name: '서윤건' }, { number: 12, name: '원태연' }, 
+            { number: 13, name: '이동규' }, { number: 14, name: '이루다' }, { number: 15, name: '이연수' }, 
+            { number: 16, name: '이정민' }, { number: 17, name: '이정협' }, { number: 18, name: '이하율' }, 
+            { number: 19, name: '최명규' }, { number: 20, name: '최민준' }, { number: 21, name: '최윤모' }, 
+            { number: 22, name: '최윤호' }, { number: 23, name: '최준우' }, { number: 24, name: '하정민' }, 
+            { number: 25, name: '허성빈' }, { number: 26, name: '홍현우' }
+          ],
+          'class5': [
+            { number: 1, name: '강승윤' }, { number: 2, name: '권기환' }, { number: 3, name: '길찬호' }, 
+            { number: 4, name: '김문원' }, { number: 5, name: '김윤호' }, { number: 6, name: '김정후' }, 
+            { number: 7, name: '김호인' }, { number: 8, name: '문현성' }, { number: 9, name: '박명재' }, 
+            { number: 10, name: '박상진' }, { number: 11, name: '심문수' }, { number: 12, name: '유지성' }, 
+            { number: 13, name: '이서우' }, { number: 14, name: '이시후' }, { number: 15, name: '이윤수' }, 
+            { number: 16, name: '이충원' }, { number: 17, name: '이현도' }, { number: 18, name: '이효원' }, 
+            { number: 19, name: '임정묵' }, { number: 20, name: '장준규' }, { number: 21, name: '정지환' }, 
+            { number: 22, name: '최근우' }, { number: 23, name: '최은혁' }, { number: 24, name: '최태영' }, 
+            { number: 25, name: '허은성' }, { number: 26, name: '홍해솔' }
+          ],
+          'class6': [
+            { number: 1, name: '강지호' }, { number: 2, name: '김관형' }, { number: 3, name: '김민성' }, 
+            { number: 4, name: '김민준' }, { number: 5, name: '김정우' }, { number: 6, name: '김주원' }, 
+            { number: 7, name: '김준수' }, { number: 8, name: '김형경' }, { number: 9, name: '서아현' }, 
+            { number: 10, name: '서찬성' }, { number: 11, name: '송예준' }, { number: 12, name: '신은수' }, 
+            { number: 13, name: '심우진' }, { number: 14, name: '윤세윤' }, { number: 15, name: '이가람' }, 
+            { number: 16, name: '이동권' }, { number: 17, name: '이동선' }, { number: 18, name: '이율민' }, 
+            { number: 19, name: '이준민' }, { number: 20, name: '이호현' }, { number: 21, name: '임종현' }, 
+            { number: 22, name: '장민' }, { number: 23, name: '장현호' }, { number: 24, name: '정민혁' }, 
+            { number: 25, name: '조하람' }, { number: 26, name: '최규화' }
+          ]
+        };
+
+        // --- STATE VARIABLES ---
+        let scores = {};
+        let memos = {};
+        let activeClassKey = 'class1';
+
+        // --- DOM ELEMENTS ---
+        const classTabsContainer = document.getElementById('classTabs');
+        const classContentArea = document.getElementById('classContentArea');
+
+        // --- DATA PERSISTENCE ---
+        const loadData = () => {
+            try {
+                scores = JSON.parse(localStorage.getItem('studentScores') || '{}');
+                memos = JSON.parse(localStorage.getItem('studentMemos') || '{}');
+            } catch (e) {
+                console.error("Failed to load data from localStorage", e);
+                scores = {};
+                memos = {};
+            }
+        };
+
+        const saveData = () => {
+            try {
+                localStorage.setItem('studentScores', JSON.stringify(scores));
+                localStorage.setItem('studentMemos', JSON.stringify(memos));
+            } catch (e) {
+                console.error("Failed to save data to localStorage", e);
+            }
+        };
+        
+        window.addEventListener('beforeunload', saveData);
+        setInterval(saveData, 5000); // Save every 5 seconds as a fallback
+
+        // --- RENDERING LOGIC ---
+        const getStars = (currentScore) => {
+            if (currentScore <= 0) return '🌱';
+            const stars = '⭐'.repeat(Math.min(currentScore, 10));
+            return stars + (currentScore > 10 ? `+${currentScore - 10}` : '');
+        };
+
+        const createStudentCardHTML = (student, classNum) => {
+            const classKey = `class${classNum}`;
+            const studentKey = `${classKey}-${student.number}`;
+            const score = scores[studentKey] || 0;
+            const studentMemos = memos[studentKey] || [];
+
+            const memosHTML = studentMemos.length > 0 
+                ? studentMemos.slice().reverse().slice(0, 3).map(memo => `
+                    <div class="p-2 rounded-md text-xs ${memo.change > 0 ? 'bg-blue-50 border-l-4 border-blue-400' : 'bg-red-50 border-l-4 border-red-400'}">
+                        <p class="font-semibold text-gray-700">
+                            <span class="${memo.change > 0 ? 'text-blue-600' : 'text-red-600'}">
+                                ${memo.change > 0 ? `+${memo.change}` : memo.change}점
+                            </span>
+                            : ${memo.text}
+                        </p>
+                        <p class="text-gray-500 text-right mt-1">${memo.date}</p>
+                    </div>
+                `).join('')
+                : `<p class="text-xs text-center text-gray-400 pt-2">메모 기록이 없습니다.</p>`;
+
+            return `
+                <div id="card-${studentKey}" class="bg-white rounded-2xl p-5 shadow-lg border-2 border-transparent hover:border-red-400 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-lg font-bold text-gray-800">${student.name}</h3>
+                        <span class="bg-purple-100 text-purple-700 text-xs font-bold px-3 py-1 rounded-full">${student.number}번</span>
+                    </div>
+
+                    <div class="flex items-center justify-between mb-4 bg-gray-50 p-3 rounded-lg">
+                        <div class="flex items-center gap-3">
+                            <div class="text-2xl" title="${score}점">${getStars(score)}</div>
+                            <div class="text-3xl font-bold text-red-500">${score}</div>
+                        </div>
+                        <div class="flex gap-2">
+                            <button onclick="handleScoreChange(${classNum}, ${student.number}, 1)" class="w-10 h-10 flex items-center justify-center rounded-full bg-gradient-to-br from-green-400 to-cyan-500 text-white font-bold text-xl shadow-md hover:scale-110 transition-transform duration-200" aria-label="점수 추가">+</button>
+                            <button onclick="handleScoreChange(${classNum}, ${student.number}, -1)" class="w-10 h-10 flex items-center justify-center rounded-full bg-gradient-to-br from-red-500 to-orange-500 text-white font-bold text-xl shadow-md hover:scale-110 transition-transform duration-200" aria-label="점수 감소">-</button>
+                        </div>
+                    </div>
+
+                    <div>
+                        <input type="text" id="memo-${studentKey}" placeholder="점수 변경 이유를 입력하세요..." class="w-full px-3 py-2 border-2 border-gray-200 rounded-lg text-sm focus:outline-none focus:border-blue-400 transition-colors" />
+                        <div class="mt-3 space-y-2 max-h-32 overflow-y-auto pr-2 custom-scrollbar">${memosHTML}</div>
+                    </div>
+                </div>
+            `;
+        };
+
+        const renderClassView = (classKey) => {
+            const classNum = parseInt(classKey.replace('class', ''), 10);
+            const students = studentsData[classKey];
+            const classTotal = students.reduce((total, student) => total + (scores[`${classKey}-${student.number}`] || 0), 0);
+
+            const studentCardsHTML = students.map(student => createStudentCardHTML(student, classNum)).join('');
+            
+            classContentArea.innerHTML = `
+                <div>
+                    <header class="flex flex-wrap gap-4 justify-between items-center mb-6 p-4 sm:p-5 bg-gradient-to-r from-blue-500 to-cyan-400 text-white rounded-xl shadow-md">
+                        <div class="flex-grow">
+                            <h2 class="text-2xl font-bold">3학년 ${classNum}반</h2>
+                            <div class="text-xl font-semibold">반 총합: <span class="font-bold">${classTotal}</span>점</div>
+                        </div>
+                        <div class="flex flex-col items-end">
+                            <button id="exportBtn-${classNum}" onclick="handleExport(${classNum})" class="flex items-center gap-2 bg-white text-blue-600 font-bold py-2 px-4 rounded-lg shadow-md hover:bg-gray-100 transition-all duration-300 disabled:opacity-50 disabled:cursor-wait">
+                                <i class="fas fa-file-export"></i>
+                                <span>시트로 내보내기</span>
+                            </button>
+                            <p id="exportMsg-${classNum}" class="text-xs mt-2 text-white bg-black/20 px-2 py-1 rounded h-6"></p>
+                        </div>
+                    </header>
+                    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
+                        ${studentCardsHTML}
+                    </div>
+                </div>
+            `;
+        };
+
+        const renderTabs = () => {
+            classTabsContainer.innerHTML = Object.keys(studentsData).map(key => {
+                const classNum = key.replace('class', '');
+                const isActive = key === activeClassKey;
+                return `
+                    <button
+                        onclick="showClass('${key}')"
+                        class="tab-btn py-3 px-4 sm:px-6 font-bold text-sm sm:text-base rounded-lg transition-all duration-300 whitespace-nowrap ${
+                            isActive
+                                ? 'bg-white text-red-500 shadow-sm'
+                                : 'bg-transparent text-gray-600 hover:bg-white/60'
+                        }"
+                        data-key="${key}"
+                    >
+                        3학년 ${classNum}반
+                    </button>
+                `;
+            }).join('');
+        };
+        
+        // --- UPDATE DISPLAY ---
+        const updateStats = () => {
+            let totalStickers = 0;
+            const classTotals = {};
+            let totalStudents = 0;
+
+            for (const classKey in studentsData) {
+                const classNum = classKey.replace('class', '');
+                let classTotal = 0;
+                totalStudents += studentsData[classKey].length;
+                for (const student of studentsData[classKey]) {
+                    const score = scores[`${classKey}-${student.number}`] || 0;
+                    totalStickers += score;
+                    classTotal += score;
+                }
+                classTotals[classNum] = classTotal;
+            }
+
+            const topClassNum = Object.keys(classTotals).length > 0
+                ? Object.keys(classTotals).reduce((a, b) => classTotals[a] > classTotals[b] ? a : b)
+                : null;
+            
+            const topClass = topClassNum && classTotals[topClassNum] > 0 ? `3-${topClassNum}반` : '-';
+
+            document.getElementById('totalStudents').textContent = totalStudents;
+            document.getElementById('totalStickers').textContent = totalStickers;
+            document.getElementById('topClass').textContent = topClass;
+        };
+
+        const updateTopPerformers = () => {
+            const allStudentsWithScores = [];
+            for (const classKey in studentsData) {
+                const classNum = classKey.replace('class', '');
+                for (const student of studentsData[classKey]) {
+                    const score = scores[`${classKey}-${student.number}`] || 0;
+                    if (score > 0) {
+                        allStudentsWithScores.push({
+                            ...student,
+                            score,
+                            classNum: Number(classNum),
+                        });
+                    }
+                }
+            }
+
+            allStudentsWithScores.sort((a, b) => b.score - a.score);
+            const top3 = allStudentsWithScores.slice(0, 3);
+            const crowns = ['👑', '🥈', '🥉'];
+            const topPerformersEl = document.getElementById('topPerformers');
+            
+            if (top3.length > 0) {
+                topPerformersEl.innerHTML = top3.map((student, idx) => `
+                    <div class="bg-white/20 p-4 rounded-lg backdrop-blur-sm transform hover:scale-105 transition-transform duration-300">
+                        <div class="text-3xl mb-1">${crowns[idx]}</div>
+                        <div class="font-bold text-lg">${student.name}</div>
+                        <div class="text-sm opacity-90">3-${student.classNum}반 ${student.number}번</div>
+                        <div class="text-base mt-1">${student.score}점 ⭐</div>
+                    </div>
+                `).join('');
+            } else {
+                topPerformersEl.innerHTML = `<div class="bg-white/20 p-4 rounded-lg">아직 기록이 없습니다</div>`;
+            }
+        };
+
+        const updateAll = () => {
+            updateStats();
+            updateTopPerformers();
+            renderTabs();
+            renderClassView(activeClassKey);
+        };
+        
+        // --- EVENT HANDLERS ---
+        window.showClass = (classKey) => {
+            activeClassKey = classKey;
+            // Update tab styles
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                if (btn.dataset.key === activeClassKey) {
+                    btn.classList.add('bg-white', 'text-red-500', 'shadow-sm');
+                    btn.classList.remove('bg-transparent', 'text-gray-600', 'hover:bg-white/60');
+                } else {
+                    btn.classList.remove('bg-white', 'text-red-500', 'shadow-sm');
+                    btn.classList.add('bg-transparent', 'text-gray-600', 'hover:bg-white/60');
+                }
+            });
+            renderClassView(activeClassKey);
+        };
+        
+        window.handleScoreChange = (classNum, studentNum, change) => {
+            const classKey = `class${classNum}`;
+            const studentKey = `${classKey}-${studentNum}`;
+            const memoInput = document.getElementById(`memo-${studentKey}`);
+            const memoText = memoInput.value.trim();
+
+            scores[studentKey] = (scores[studentKey] || 0) + change;
+
+            if (memoText) {
+                if (!memos[studentKey]) {
+                    memos[studentKey] = [];
+                }
+                memos[studentKey].push({
+                    date: new Date().toLocaleString('ko-KR'),
+                    text: memoText,
+                    change: change,
+                    recorder: '선생님'
+                });
+            }
+            
+            memoInput.value = '';
+            updateAll(); // Re-render everything to show changes
+        };
+
+        window.handleExport = async (classNum) => {
+            const exportBtn = document.getElementById(`exportBtn-${classNum}`);
+            const btnText = exportBtn.querySelector('span');
+            const exportMsg = document.getElementById(`exportMsg-${classNum}`);
+            
+            if (!GOOGLE_SCRIPT_URL) {
+                alert('Google Apps Script URL이 설정되지 않았습니다.');
+                return;
+            }
+
+            exportBtn.disabled = true;
+            btnText.textContent = '내보내는 중...';
+            exportMsg.textContent = '';
+
+            const classKey = `class${classNum}`;
+            const students = studentsData[classKey];
+            const records = [];
+            students.forEach(student => {
+                const studentKey = `${classKey}-${student.number}`;
+                const studentMemos = memos[studentKey] || [];
+                studentMemos.forEach(memo => {
+                    records.push({
+                        ...memo,
+                        studentName: student.name,
+                        studentNumber: student.number,
+                    });
+                });
+            });
+
+            if (records.length === 0) {
+                exportMsg.textContent = '내보낼 데이터가 없습니다.';
+                exportBtn.disabled = false;
+                btnText.textContent = '시트로 내보내기';
+                setTimeout(() => { exportMsg.textContent = ''; }, 3000);
+                return;
+            }
+
+            try {
+                const response = await fetch(GOOGLE_SCRIPT_URL, {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        className: `3학년 ${classNum}반`,
+                        records: records,
+                    }),
+                });
+
+                if (!response.ok) throw new Error(`네트워크 오류: ${response.statusText}`);
+
+                const result = await response.json();
+                if (result.status === 'success') {
+                    exportMsg.textContent = result.message;
+                } else {
+                    throw new Error(result.message);
+                }
+            } catch (error) {
+                console.error('Error exporting data:', error);
+                exportMsg.textContent = `오류: ${error.message}`;
+            } finally {
+                exportBtn.disabled = false;
+                btnText.textContent = '시트로 내보내기';
+                setTimeout(() => { exportMsg.textContent = ''; }, 7000);
+            }
+        };
+
+        // --- INITIALIZATION ---
+        const init = () => {
+            loadData();
+            updateAll();
+        };
+
+        init();
+    });
+    </script>
+</body>
+</html>
