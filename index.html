@@ -999,7 +999,7 @@
                 message: message,
                 showInput: true,
                 placeholder: 'https://script.google.com/macros/s/.../exec',
-                initialValue: currentUrl || ''
+                initialValue: currentUrl || 'https://script.google.com/macros/s/AKfycbzh7MJLFrfBg18DO2GwFGHwRMYFWoN3Q-Vh12l_AgWMnX_HB4QW8rRy2HmoD6zGIq4ZZQ/exec'
             });
 
             if (newUrl === null) return null;
@@ -1026,7 +1026,7 @@
         }
 
         async function exportToSheet(classNum = null, btnElement) {
-            let webAppUrl = localStorage.getItem('webAppUrl');
+            let webAppUrl = localStorage.getItem('webAppUrl') || 'https://script.google.com/macros/s/AKfycbzh7MJLFrfBg18DO2GwFGHwRMYFWoN3Q-Vh12l_AgWMnX_HB4QW8rRy2HmoD6zGIq4ZZQ/exec';
 
             if (!webAppUrl) {
                 const newUrl = await showSettingsModal(true);
@@ -1076,9 +1076,7 @@
                 });
                 
                 // Google Apps Script redirects, so we can't easily check response.ok.
-                // Instead, we assume success if no network error is thrown, 
-                // as the detailed error is handled on the server side.
-                // A more robust solution might involve the script returning a specific JSONP response.
+                // Instead, we assume success if no network error is thrown.
                 if (response.type === 'opaque' || response.ok) {
                    await showModal({ title: '성공', message: `'${sheetName}' 데이터를 성공적으로 시트로 내보냈습니다!`, showInput: false });
                 } else {
