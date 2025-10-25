@@ -1,468 +1,1134 @@
-
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>3학년 칭찬스티커판</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <style>
-        /* 간단한 커스텀 스타일 추가 */
-        .text-shadow {
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
-        /* 스크롤바 디자인 */
-        .custom-scrollbar::-webkit-scrollbar {
-            width: 8px;
+
+        body {
+            font-family: 'Malgun Gothic', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
         }
-        .custom-scrollbar::-webkit-scrollbar-track {
-            background: #f1f1f1;
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header-controls {
+            margin-top: 20px;
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .header-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: rgba(255,255,255,0.2);
+            color: white;
+            backdrop-filter: blur(5px);
+        }
+
+        .header-btn:hover {
+            background: rgba(255,255,255,0.4);
+            transform: translateY(-2px);
+        }
+
+        .header-btn.reset {
+            background: #c23616;
+        }
+        
+        .header-btn:disabled {
+            cursor: not-allowed;
+            opacity: 0.6;
+            transform: none;
+        }
+
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            background: #f8f9fa;
+            padding: 20px;
+            border-bottom: 3px solid #e9ecef;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 10px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            min-width: 150px;
+            flex: 1;
+        }
+
+        .stat-number {
+            font-size: 2em;
+            font-weight: bold;
+            color: #ff6b6b;
+        }
+
+        .stat-label {
+            color: #666;
+            margin-top: 5px;
+        }
+
+        .class-tabs {
+            display: flex;
+            background: #e9ecef;
+            overflow-x: auto;
+        }
+
+        .tab {
+            padding: 15px 30px;
+            cursor: pointer;
+            border: none;
+            background: transparent;
+            font-size: 1.1em;
+            font-weight: bold;
+            color: #666;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+
+        .tab.active {
+            background: white;
+            color: #ff6b6b;
+            border-bottom: 3px solid #ff6b6b;
+        }
+
+        .tab:hover {
+            background: #f8f9fa;
+        }
+
+        .class-content {
+            padding: 30px;
+            display: none;
+        }
+
+        .class-content.active {
+            display: block;
+        }
+
+        .class-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding: 15px 25px;
+            background: linear-gradient(135deg, #74b9ff, #0984e3);
+            color: white;
+            border-radius: 15px;
+        }
+        
+        .class-header-controls {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .class-export-btn {
+            padding: 8px 15px;
+            font-size: 0.9em;
+            background: rgba(255,255,255,0.15) !important;
+            border: 1px solid rgba(255,255,255,0.3);
+        }
+        .class-export-btn:hover {
+            background: rgba(255,255,255,0.3) !important;
+        }
+
+
+        .class-title {
+            font-size: 1.8em;
+            font-weight: bold;
+        }
+
+        .class-total {
+            font-size: 1.5em;
+            font-weight: bold;
+            background: rgba(0,0,0,0.1);
+            padding: 5px 15px;
             border-radius: 10px;
         }
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-            background: #888;
-            border-radius: 10px;
+
+        .students-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
         }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-            background: #555;
+
+        .student-card {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .student-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+            border-color: #ff6b6b;
+        }
+
+        .student-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .student-name {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #2d3436;
+        }
+
+        .student-number {
+            background: #ddd6fe;
+            color: #7c3aed;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: bold;
+        }
+
+        .score-section {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+
+        .score-display {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .stars {
+            color: #ffd700;
+            font-size: 1.5em;
+        }
+
+        .score-number {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #ff6b6b;
+        }
+
+        .score-controls {
+            display: flex;
+            gap: 10px;
+        }
+
+        .score-btn {
+            width: 40px;
+            height: 40px;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.2em;
+            font-weight: bold;
+            color: white;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .score-btn.plus {
+            background: linear-gradient(135deg, #00b894, #00a085);
+        }
+
+        .score-btn.minus {
+            background: linear-gradient(135deg, #e17055, #d63031);
+        }
+
+        .score-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .memo-section {
+            margin-top: 15px;
+        }
+
+        .memo-input {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            font-size: 0.9em;
+            transition: border-color 0.3s ease;
+        }
+
+        .memo-input:focus {
+            outline: none;
+            border-color: #74b9ff;
+        }
+
+        .memo-list {
+            margin-top: 10px;
+            max-height: 150px;
+            overflow-y: auto;
+        }
+
+        .memo-item {
+            background: #f8f9fa;
+            padding: 8px 12px;
+            border-radius: 8px;
+            margin-bottom: 5px;
+            font-size: 0.85em;
+            border-left: 3px solid #74b9ff;
+        }
+        
+        .memo-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .memo-delete-btn {
+            background: none;
+            border: none;
+            color: #aaa;
+            font-size: 1.2em;
+            cursor: pointer;
+            padding: 0 5px;
+            line-height: 1;
+        }
+
+        .memo-delete-btn:hover {
+            color: #d63031;
+        }
+
+        .memo-item.negative {
+            border-left-color: #e17055;
+        }
+
+        .memo-date {
+            color: #666;
+            font-size: 0.8em;
+        }
+
+        .memo-text {
+            margin-top: 3px;
+        }
+
+        .top-performers {
+            background: linear-gradient(135deg, #fdcb6e, #e17055);
+            color: white;
+            padding: 25px;
+            margin: 20px 0;
+            border-radius: 15px;
+            text-align: center;
+        }
+
+        .top-performers h3 {
+            margin-bottom: 15px;
+            font-size: 1.5em;
+        }
+
+        .top-list {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            flex-wrap: wrap;
+        }
+
+        .top-item {
+            background: rgba(255,255,255,0.2);
+            padding: 15px;
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+            min-width: 150px;
+        }
+
+        .crown {
+            font-size: 2em;
+            margin-bottom: 5px;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.5);
+            backdrop-filter: blur(5px);
+            animation: fadeIn 0.3s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 15% auto;
+            padding: 30px;
+            border: 1px solid #888;
+            width: 90%;
+            max-width: 500px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            position: relative;
+            animation: slideIn 0.3s;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateY(-50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .modal-close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            line-height: 1;
+        }
+
+        .modal-close:hover,
+        .modal-close:focus {
+            color: black;
+            text-decoration: none;
+        }
+
+        #modal-title {
+            margin-bottom: 15px;
+            font-size: 1.5em;
+            color: #333;
+        }
+
+        #modal-message {
+            margin-bottom: 20px;
+            font-size: 1em;
+            color: #666;
+            line-height: 1.5;
+            text-align: left;
+        }
+
+        #modal-input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 1em;
+        }
+
+        .modal-actions {
+            text-align: right;
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        .modal-btn {
+            padding: 10px 25px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .modal-btn.confirm {
+            background: #ff6b6b;
+            color: white;
+        }
+        .modal-btn.confirm:hover {
+            background: #ee5a24;
+        }
+
+        .modal-btn.cancel {
+            background: #e9ecef;
+            color: #333;
+        }
+        .modal-btn.cancel:hover {
+            background: #ced4da;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+            .students-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .class-tabs {
+                flex-wrap: wrap;
+            }
+            
+            .tab {
+                flex-grow: 1;
+                min-width: 100px;
+            }
+            
+            .top-list {
+                flex-direction: column;
+                align-items: center;
+            }
         }
     </style>
 </head>
-<body class="bg-gradient-to-br from-indigo-300 to-purple-400 min-h-screen p-2 sm:p-5">
-    <div id="app-container" class="max-w-7xl mx-auto bg-white rounded-2xl shadow-2xl overflow-hidden">
-        <!-- Header -->
-        <header class="bg-gradient-to-r from-red-500 to-orange-400 text-white p-6 sm:p-8 text-center">
-            <h1 class="text-3xl sm:text-4xl font-bold mb-2 text-shadow">🌟 3학년 칭찬스티커판 🌟</h1>
-            <p class="text-base sm:text-lg text-red-100">매달 최고의 반과 학생을 찾아보세요!</p>
-        </header>
-
-        <!-- Stats -->
-        <div class="flex justify-around bg-gray-100 p-4 sm:p-5 border-b-2 border-gray-200">
-            <div class="text-center p-4 bg-white rounded-xl shadow-md min-w-[120px] sm:min-w-[150px]">
-                <div id="totalStudents" class="text-3xl font-bold text-red-500">0</div>
-                <div class="text-sm text-gray-600 mt-1">전체 학생 수</div>
-            </div>
-            <div class="text-center p-4 bg-white rounded-xl shadow-md min-w-[120px] sm:min-w-[150px]">
-                <div id="totalStickers" class="text-3xl font-bold text-red-500">0</div>
-                <div class="text-sm text-gray-600 mt-1">전체 스티커 수</div>
-            </div>
-            <div class="text-center p-4 bg-white rounded-xl shadow-md min-w-[120px] sm:min-w-[150px]">
-                <div id="topClass" class="text-3xl font-bold text-red-500">-</div>
-                <div class="text-sm text-gray-600 mt-1">1등 반</div>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🌟 3학년 칭찬스티커판 🌟</h1>
+            <p>매달 최고의 반과 학생을 찾아보세요!</p>
+            <div class="header-controls">
+                <button id="exportBtn" class="header-btn">전체 데이터 내보내기 🚀</button>
+                <button id="settingsBtn" class="header-btn">설정 ⚙️</button>
+                <button id="resetBtn" class="header-btn reset">전체 초기화 ⚠️</button>
             </div>
         </div>
 
-        <!-- Top Performers -->
-        <div class="p-4 sm:p-6">
-            <div class="bg-gradient-to-r from-amber-400 to-orange-500 text-white p-6 rounded-2xl text-center shadow-lg">
-                <h3 class="mb-4 text-2xl font-bold">🏆 이달의 TOP 3 🏆</h3>
-                <div id="topPerformers" class="flex justify-center gap-4 sm:gap-8 flex-wrap">
-                    <div class="bg-white/20 p-4 rounded-lg">아직 기록이 없습니다</div>
-                </div>
+        <div class="stats">
+            <div class="stat-item">
+                <div class="stat-number" id="totalStudents">0</div>
+                <div class="stat-label">전체 학생 수</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number" id="totalStickers">0</div>
+                <div class="stat-label">전체 스티커 수</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number" id="topClass">-</div>
+                <div class="stat-label">1등 반</div>
             </div>
         </div>
 
-        <!-- Class Tabs -->
-        <div class="bg-gray-200 overflow-x-auto">
-            <nav id="classTabs" class="flex space-x-2 p-1"></nav>
+        <div class="top-performers">
+            <h3>🏆 이달의 TOP 3 🏆</h3>
+            <div class="top-list" id="topPerformers">
+                <div class="top-item">아직 기록이 없습니다</div>
+            </div>
         </div>
 
-        <!-- Class Content Area -->
-        <main id="classContentArea" class="p-4 sm:p-6 bg-gray-50"></main>
+        <div class="class-tabs" id="classTabsContainer">
+            <!-- Tabs will be dynamically generated here -->
+        </div>
+
+        <div id="classContentContainer">
+            <!-- Class content will be dynamically generated here -->
+        </div>
+    </div>
+    
+    <div id="customModal" class="modal">
+        <div class="modal-content">
+            <span class="modal-close">&times;</span>
+            <h2 id="modal-title"></h2>
+            <div id="modal-message"></div>
+            <input type="text" id="modal-input" placeholder="">
+            <div class="modal-actions">
+                <button id="modal-cancel-btn" class="modal-btn cancel">취소</button>
+                <button id="modal-confirm-btn" class="modal-btn confirm">확인</button>
+            </div>
+        </div>
     </div>
 
     <script>
-    document.addEventListener('DOMContentLoaded', () => {
-        // --- DATA AND CONSTANTS ---
-        const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwbLZvOcMewFsJuGHtu8wpd4C63PoDOUmWc1k45tN7FdHTVrjoV23dH7nARp0u6_AFa4g/exec';
         const studentsData = {
-          'class1': [
-            { number: 1, name: '간민준' }, { number: 2, name: '권예한' }, { number: 3, name: '김대한' }, 
-            { number: 4, name: '김서정' }, { number: 5, name: '김선율' }, { number: 6, name: '김승민' }, 
-            { number: 7, name: '김재원' }, { number: 8, name: '김정수' }, { number: 9, name: '김해원' }, 
-            { number: 10, name: '남궁건' }, { number: 11, name: '노현승' }, { number: 13, name: '백서율' }, 
-            { number: 14, name: '변성현' }, { number: 15, name: '송호근' }, { number: 16, name: '원상진' }, 
-            { number: 17, name: '유동건' }, { number: 18, name: '윤혜성' }, { number: 19, name: '이시윤' }, 
-            { number: 20, name: '정다검' }, { number: 21, name: '최근찬' }, { number: 22, name: '최시우' }, 
-            { number: 23, name: '최시훈' }, { number: 24, name: '추정우' }, { number: 25, name: '한준희' }, 
-            { number: 26, name: '허리원' }, { number: 27, name: '홍주호' }
-          ],
-          'class2': [
-            { number: 1, name: '강민재' }, { number: 2, name: '경덕규' }, { number: 3, name: '곽명석' }, 
-            { number: 4, name: '구교원' }, { number: 5, name: '권유빈' }, { number: 6, name: '김재웅' }, 
-            { number: 7, name: '김태수' }, { number: 8, name: '나승현' }, { number: 9, name: '노해일' }, 
-            { number: 10, name: '박건휘' }, { number: 11, name: '박송우' }, { number: 12, name: '송인엽' }, 
-            { number: 13, name: '안재홍' }, { number: 14, name: '윤서진' }, { number: 15, name: '이상준' }, 
-            { number: 16, name: '이수한' }, { number: 17, name: '이승현' }, { number: 18, name: '정우진' }, 
-            { number: 20, name: '지성정' }, { number: 21, name: '진연우' }, { number: 22, name: '차윤호' }, 
-            { number: 23, name: '차은찬' }, { number: 24, name: '최재우' }, { number: 25, name: '최호영' }, 
-            { number: 26, name: '하석주' }, { number: 27, name: '김동혁' }
-          ],
-          'class3': [
-            { number: 1, name: '길성호' }, { number: 2, name: '김민준' }, { number: 3, name: '김영준' }, 
-            { number: 4, name: '김재신' }, { number: 5, name: '남승찬' }, { number: 6, name: '문주환' }, 
-            { number: 7, name: '민정기' }, { number: 8, name: '박은찬' }, { number: 9, name: '박주혁' }, 
-            { number: 10, name: '손영철' }, { number: 11, name: '손정훈' }, { number: 12, name: '송민제' }, 
-            { number: 13, name: '심우주' }, { number: 14, name: '원준혁' }, { number: 15, name: '이낙연' }, 
-            { number: 16, name: '이하윤' }, { number: 17, name: '장성욱' }, { number: 18, name: '전도윤' }, 
-            { number: 19, name: '정명훈' }, { number: 20, name: '정서후' }, { number: 21, name: '정진섭' }, 
-            { number: 22, name: '주현우' }, { number: 23, name: '최민준' }, { number: 24, name: '최우진' }, 
-            { number: 25, name: '최인우' }, { number: 26, name: '한결' }
-          ],
-          'class4': [
-            { number: 1, name: '권지후' }, { number: 2, name: '김동후' }, { number: 3, name: '김민기' }, 
-            { number: 4, name: '김유래' }, { number: 5, name: '김주영' }, { number: 6, name: '김주환' }, 
-            { number: 7, name: '김준혁' }, { number: 8, name: '문정환' }, { number: 9, name: '박건호' }, 
-            { number: 10, name: '박민찬' }, { number: 11, name: '서윤건' }, { number: 12, name: '원태연' }, 
-            { number: 13, name: '이동규' }, { number: 14, name: '이루다' }, { number: 15, name: '이연수' }, 
-            { number: 16, name: '이정민' }, { number: 17, name: '이정협' }, { number: 18, name: '이하율' }, 
-            { number: 19, name: '최명규' }, { number: 20, name: '최민준' }, { number: 21, name: '최윤모' }, 
-            { number: 22, name: '최윤호' }, { number: 23, name: '최준우' }, { number: 24, name: '하정민' }, 
-            { number: 25, name: '허성빈' }, { number: 26, name: '홍현우' }
-          ],
-          'class5': [
-            { number: 1, name: '강승윤' }, { number: 2, name: '권기환' }, { number: 3, name: '길찬호' }, 
-            { number: 4, name: '김문원' }, { number: 5, name: '김윤호' }, { number: 6, name: '김정후' }, 
-            { number: 7, name: '김호인' }, { number: 8, name: '문현성' }, { number: 9, name: '박명재' }, 
-            { number: 10, name: '박상진' }, { number: 11, name: '심문수' }, { number: 12, name: '유지성' }, 
-            { number: 13, name: '이서우' }, { number: 14, name: '이시후' }, { number: 15, name: '이윤수' }, 
-            { number: 16, name: '이충원' }, { number: 17, name: '이현도' }, { number: 18, name: '이효원' }, 
-            { number: 19, name: '임정묵' }, { number: 20, name: '장준규' }, { number: 21, name: '정지환' }, 
-            { number: 22, name: '최근우' }, { number: 23, name: '최은혁' }, { number: 24, name: '최태영' }, 
-            { number: 25, name: '허은성' }, { number: 26, name: '홍해솔' }
-          ],
-          'class6': [
-            { number: 1, name: '강지호' }, { number: 2, name: '김관형' }, { number: 3, name: '김민성' }, 
-            { number: 4, name: '김민준' }, { number: 5, name: '김정우' }, { number: 6, name: '김주원' }, 
-            { number: 7, name: '김준수' }, { number: 8, name: '김형경' }, { number: 9, name: '서아현' }, 
-            { number: 10, name: '서찬성' }, { number: 11, name: '송예준' }, { number: 12, name: '신은수' }, 
-            { number: 13, name: '심우진' }, { number: 14, name: '윤세윤' }, { number: 15, name: '이가람' }, 
-            { number: 16, name: '이동권' }, { number: 17, name: '이동선' }, { number: 18, name: '이율민' }, 
-            { number: 19, name: '이준민' }, { number: 20, name: '이호현' }, { number: 21, name: '임종현' }, 
-            { number: 22, name: '장민' }, { number: 23, name: '장현호' }, { number: 24, name: '정민혁' }, 
-            { number: 25, name: '조하람' }, { number: 26, name: '최규화' }
-          ]
+            class1: [
+                {number: 1, name: '간민준'}, {number: 2, name: '권예한'}, {number: 3, name: '김대한'}, 
+                {number: 4, name: '김서정'}, {number: 5, name: '김선율'}, {number: 6, name: '김승민'}, 
+                {number: 7, name: '김재원'}, {number: 8, name: '김정수'}, {number: 9, name: '김해원'}, 
+                {number: 10, name: '남궁건'}, {number: 11, name: '노현승'}, {number: 13, name: '백서율'}, 
+                {number: 14, name: '변성현'}, {number: 15, name: '송호근'}, {number: 16, name: '원상진'}, 
+                {number: 17, name: '유동건'}, {number: 18, name: '윤혜성'}, {number: 19, name: '이시윤'}, 
+                {number: 20, name: '정다검'}, {number: 21, name: '최근찬'}, {number: 22, name: '최시우'}, 
+                {number: 23, name: '최시훈'}, {number: 24, name: '추정우'}, {number: 25, name: '한준희'}, 
+                {number: 26, name: '허리원'}, {number: 27, name: '홍주호'}
+            ],
+            class2: [
+                {number: 1, name: '강민재'}, {number: 2, name: '경덕규'}, {number: 3, name: '곽명석'}, 
+                {number: 4, name: '구교원'}, {number: 5, name: '권유빈'}, {number: 6, name: '김재웅'}, 
+                {number: 7, name: '김태수'}, {number: 8, name: '나승현'}, {number: 9, name: '노해일'}, 
+                {number: 10, name: '박건휘'}, {number: 11, name: '박송우'}, {number: 12, name: '송인엽'}, 
+                {number: 13, name: '안재홍'}, {number: 14, name: '윤서진'}, {number: 15, name: '이상준'}, 
+                {number: 16, name: '이수한'}, {number: 17, name: '이승현'}, {number: 18, name: '정우진'}, 
+                {number: 20, name: '지성정'}, {number: 21, name: '진연우'}, {number: 22, name: '차윤호'}, 
+                {number: 23, name: '차은찬'}, {number: 24, name: '최재우'}, {number: 25, name: '최호영'}, 
+                {number: 26, name: '하석주'}, {number: 27, name: '김동혁'}
+            ],
+            class3: [
+                {number: 1, name: '길성호'}, {number: 2, name: '김민준'}, {number: 3, name: '김영준'}, 
+                {number: 4, name: '김재신'}, {number: 5, name: '남승찬'}, {number: 6, name: '문주환'}, 
+                {number: 7, name: '민정기'}, {number: 8, name: '박은찬'}, {number: 9, name: '박주혁'}, 
+                {number: 10, name: '손영철'}, {number: 11, name: '손정훈'}, {number: 12, name: '송민제'}, 
+                {number: 13, name: '심우주'}, {number: 14, name: '원준혁'}, {number: 15, name: '이낙연'}, 
+                {number: 16, name: '이하윤'}, {number: 17, name: '장성욱'}, {number: 18, name: '전도윤'}, 
+                {number: 19, name: '정명훈'}, {number: 20, name: '정서후'}, {number: 21, name: '정진섭'}, 
+                {number: 22, name: '주현우'}, {number: 23, name: '최민준'}, {number: 24, name: '최우진'}, 
+                {number: 25, name: '최인우'}, {number: 26, name: '한결'}
+            ],
+            class4: [
+                {number: 1, name: '권지후'}, {number: 2, name: '김동후'}, {number: 3, name: '김민기'}, 
+                {number: 4, name: '김유래'}, {number: 5, name: '김주영'}, {number: 6, name: '김주환'}, 
+                {number: 7, name: '김준혁'}, {number: 8, name: '문정환'}, {number: 9, name: '박건호'}, 
+                {number: 10, name: '박민찬'}, {number: 11, name: '서윤건'}, {number: 12, name: '원태연'}, 
+                {number: 13, name: '이동규'}, {number: 14, name: '이루다'}, {number: 15, name: '이연수'}, 
+                {number: 16, name: '이정민'}, {number: 17, name: '이정협'}, {number: 18, name: '이하율'}, 
+                {number: 19, name: '최명규'}, {number: 20, name: '최민준'}, {number: 21, name: '최윤모'}, 
+                {number: 22, name: '최윤호'}, {number: 23, name: '최준우'}, {number: 24, name: '하정민'}, 
+                {number: 25, name: '허성빈'}, {number: 26, name: '홍현우'}
+            ],
+            class5: [
+                {number: 1, name: '강승윤'}, {number: 2, name: '권기환'}, {number: 3, name: '길찬호'}, 
+                {number: 4, name: '김문원'}, {number: 5, name: '김윤호'}, {number: 6, name: '김정후'}, 
+                {number: 7, name: '김호인'}, {number: 8, name: '문현성'}, {number: 9, name: '박명재'}, 
+                {number: 10, name: '박상진'}, {number: 11, name: '심문수'}, {number: 12, name: '유지성'}, 
+                {number: 13, name: '이서우'}, {number: 14, name: '이시후'}, {number: 15, name: '이윤수'}, 
+                {number: 16, name: '이충원'}, {number: 17, name: '이현도'}, {number: 18, name: '이효원'}, 
+                {number: 19, name: '임정묵'}, {number: 20, name: '장준규'}, {number: 21, name: '정지환'}, 
+                {number: 22, name: '최근우'}, {number: 23, name: '최은혁'}, {number: 24, name: '최태영'}, 
+                {number: 25, name: '허은성'}, {number: 26, name: '홍해솔'}
+            ],
+            class6: [
+                {number: 1, name: '강지호'}, {number: 2, name: '김관형'}, {number: 3, name: '김민성'}, 
+                {number: 4, name: '김민준'}, {number: 5, name: '김정우'}, {number: 6, name: '김주원'}, 
+                {number: 7, name: '김준수'}, {number: 8, name: '김형경'}, {number: 9, name: '서아현'}, 
+                {number: 10, name: '서찬성'}, {number: 11, name: '송예준'}, {number: 12, name: '신은수'}, 
+                {number: 13, name: '심우진'}, {number: 14, name: '윤세윤'}, {number: 15, name: '이가람'}, 
+                {number: 16, name: '이동권'}, {number: 17, name: '이동선'}, {number: 18, name: '이율민'}, 
+                {number: 19, name: '이준민'}, {number: 20, name: '이호현'}, {number: 21, name: '임종현'}, 
+                {number: 22, name: '장민'}, {number: 23, name: '장현호'}, {number: 24, name: '정민혁'}, 
+                {number: 25, name: '조하람'}, {number: 26, 'name': '최규화'}
+            ]
         };
 
-        // --- STATE VARIABLES ---
-        let scores = {};
-        let memos = {};
-        let activeClassKey = 'class1';
+        let studentScores = {};
+        let studentMemos = {};
 
-        // --- DOM ELEMENTS ---
-        const classTabsContainer = document.getElementById('classTabs');
-        const classContentArea = document.getElementById('classContentArea');
+        function showModal(config) {
+            return new Promise((resolve) => {
+                const modal = document.getElementById('customModal');
+                const titleEl = document.getElementById('modal-title');
+                const messageEl = document.getElementById('modal-message');
+                const inputEl = document.getElementById('modal-input');
+                const confirmBtn = document.getElementById('modal-confirm-btn');
+                const cancelBtn = document.getElementById('modal-cancel-btn');
+                const closeBtn = document.querySelector('.modal-close');
 
-        // --- DATA PERSISTENCE ---
-        const loadData = () => {
-            try {
-                scores = JSON.parse(localStorage.getItem('studentScores') || '{}');
-                memos = JSON.parse(localStorage.getItem('studentMemos') || '{}');
-            } catch (e) {
-                console.error("Failed to load data from localStorage", e);
-                scores = {};
-                memos = {};
-            }
-        };
-
-        const saveData = () => {
-            try {
-                localStorage.setItem('studentScores', JSON.stringify(scores));
-                localStorage.setItem('studentMemos', JSON.stringify(memos));
-            } catch (e) {
-                console.error("Failed to save data to localStorage", e);
-            }
-        };
-        
-        window.addEventListener('beforeunload', saveData);
-        setInterval(saveData, 5000); // Save every 5 seconds as a fallback
-
-        // --- RENDERING LOGIC ---
-        const getStars = (currentScore) => {
-            if (currentScore <= 0) return '🌱';
-            const stars = '⭐'.repeat(Math.min(currentScore, 10));
-            return stars + (currentScore > 10 ? `+${currentScore - 10}` : '');
-        };
-
-        const createStudentCardHTML = (student, classNum) => {
-            const classKey = `class${classNum}`;
-            const studentKey = `${classKey}-${student.number}`;
-            const score = scores[studentKey] || 0;
-            const studentMemos = memos[studentKey] || [];
-
-            const memosHTML = studentMemos.length > 0 
-                ? studentMemos.slice().reverse().slice(0, 3).map(memo => `
-                    <div class="p-2 rounded-md text-xs ${memo.change > 0 ? 'bg-blue-50 border-l-4 border-blue-400' : 'bg-red-50 border-l-4 border-red-400'}">
-                        <p class="font-semibold text-gray-700">
-                            <span class="${memo.change > 0 ? 'text-blue-600' : 'text-red-600'}">
-                                ${memo.change > 0 ? `+${memo.change}` : memo.change}점
-                            </span>
-                            : ${memo.text}
-                        </p>
-                        <p class="text-gray-500 text-right mt-1">${memo.date}</p>
-                    </div>
-                `).join('')
-                : `<p class="text-xs text-center text-gray-400 pt-2">메모 기록이 없습니다.</p>`;
-
-            return `
-                <div id="card-${studentKey}" class="bg-white rounded-2xl p-5 shadow-lg border-2 border-transparent hover:border-red-400 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
-                    <div class="flex justify-between items-center mb-4">
-                        <h3 class="text-lg font-bold text-gray-800">${student.name}</h3>
-                        <span class="bg-purple-100 text-purple-700 text-xs font-bold px-3 py-1 rounded-full">${student.number}번</span>
-                    </div>
-
-                    <div class="flex items-center justify-between mb-4 bg-gray-50 p-3 rounded-lg">
-                        <div class="flex items-center gap-3">
-                            <div class="text-2xl" title="${score}점">${getStars(score)}</div>
-                            <div class="text-3xl font-bold text-red-500">${score}</div>
-                        </div>
-                        <div class="flex gap-2">
-                            <button onclick="handleScoreChange(${classNum}, ${student.number}, 1)" class="w-10 h-10 flex items-center justify-center rounded-full bg-gradient-to-br from-green-400 to-cyan-500 text-white font-bold text-xl shadow-md hover:scale-110 transition-transform duration-200" aria-label="점수 추가">+</button>
-                            <button onclick="handleScoreChange(${classNum}, ${student.number}, -1)" class="w-10 h-10 flex items-center justify-center rounded-full bg-gradient-to-br from-red-500 to-orange-500 text-white font-bold text-xl shadow-md hover:scale-110 transition-transform duration-200" aria-label="점수 감소">-</button>
-                        </div>
-                    </div>
-
-                    <div>
-                        <input type="text" id="memo-${studentKey}" placeholder="점수 변경 이유를 입력하세요..." class="w-full px-3 py-2 border-2 border-gray-200 rounded-lg text-sm focus:outline-none focus:border-blue-400 transition-colors" />
-                        <div class="mt-3 space-y-2 max-h-32 overflow-y-auto pr-2 custom-scrollbar">${memosHTML}</div>
-                    </div>
-                </div>
-            `;
-        };
-
-        const renderClassView = (classKey) => {
-            const classNum = parseInt(classKey.replace('class', ''), 10);
-            const students = studentsData[classKey];
-            const classTotal = students.reduce((total, student) => total + (scores[`${classKey}-${student.number}`] || 0), 0);
-
-            const studentCardsHTML = students.map(student => createStudentCardHTML(student, classNum)).join('');
-            
-            classContentArea.innerHTML = `
-                <div>
-                    <header class="flex flex-wrap gap-4 justify-between items-center mb-6 p-4 sm:p-5 bg-gradient-to-r from-blue-500 to-cyan-400 text-white rounded-xl shadow-md">
-                        <div class="flex-grow">
-                            <h2 class="text-2xl font-bold">3학년 ${classNum}반</h2>
-                            <div class="text-xl font-semibold">반 총합: <span class="font-bold">${classTotal}</span>점</div>
-                        </div>
-                        <div class="flex flex-col items-end">
-                            <button id="exportBtn-${classNum}" onclick="handleExport(${classNum})" class="flex items-center gap-2 bg-white text-blue-600 font-bold py-2 px-4 rounded-lg shadow-md hover:bg-gray-100 transition-all duration-300 disabled:opacity-50 disabled:cursor-wait">
-                                <i class="fas fa-file-export"></i>
-                                <span>시트로 내보내기</span>
-                            </button>
-                            <p id="exportMsg-${classNum}" class="text-xs mt-2 text-white bg-black/20 px-2 py-1 rounded h-6"></p>
-                        </div>
-                    </header>
-                    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
-                        ${studentCardsHTML}
-                    </div>
-                </div>
-            `;
-        };
-
-        const renderTabs = () => {
-            classTabsContainer.innerHTML = Object.keys(studentsData).map(key => {
-                const classNum = key.replace('class', '');
-                const isActive = key === activeClassKey;
-                return `
-                    <button
-                        onclick="showClass('${key}')"
-                        class="tab-btn py-3 px-4 sm:px-6 font-bold text-sm sm:text-base rounded-lg transition-all duration-300 whitespace-nowrap ${
-                            isActive
-                                ? 'bg-white text-red-500 shadow-sm'
-                                : 'bg-transparent text-gray-600 hover:bg-white/60'
-                        }"
-                        data-key="${key}"
-                    >
-                        3학년 ${classNum}반
-                    </button>
-                `;
-            }).join('');
-        };
-        
-        // --- UPDATE DISPLAY ---
-        const updateStats = () => {
-            let totalStickers = 0;
-            const classTotals = {};
-            let totalStudents = 0;
-
-            for (const classKey in studentsData) {
-                const classNum = classKey.replace('class', '');
-                let classTotal = 0;
-                totalStudents += studentsData[classKey].length;
-                for (const student of studentsData[classKey]) {
-                    const score = scores[`${classKey}-${student.number}`] || 0;
-                    totalStickers += score;
-                    classTotal += score;
-                }
-                classTotals[classNum] = classTotal;
-            }
-
-            const topClassNum = Object.keys(classTotals).length > 0
-                ? Object.keys(classTotals).reduce((a, b) => classTotals[a] > classTotals[b] ? a : b)
-                : null;
-            
-            const topClass = topClassNum && classTotals[topClassNum] > 0 ? `3-${topClassNum}반` : '-';
-
-            document.getElementById('totalStudents').textContent = totalStudents;
-            document.getElementById('totalStickers').textContent = totalStickers;
-            document.getElementById('topClass').textContent = topClass;
-        };
-
-        const updateTopPerformers = () => {
-            const allStudentsWithScores = [];
-            for (const classKey in studentsData) {
-                const classNum = classKey.replace('class', '');
-                for (const student of studentsData[classKey]) {
-                    const score = scores[`${classKey}-${student.number}`] || 0;
-                    if (score > 0) {
-                        allStudentsWithScores.push({
-                            ...student,
-                            score,
-                            classNum: Number(classNum),
-                        });
-                    }
-                }
-            }
-
-            allStudentsWithScores.sort((a, b) => b.score - a.score);
-            const top3 = allStudentsWithScores.slice(0, 3);
-            const crowns = ['👑', '🥈', '🥉'];
-            const topPerformersEl = document.getElementById('topPerformers');
-            
-            if (top3.length > 0) {
-                topPerformersEl.innerHTML = top3.map((student, idx) => `
-                    <div class="bg-white/20 p-4 rounded-lg backdrop-blur-sm transform hover:scale-105 transition-transform duration-300">
-                        <div class="text-3xl mb-1">${crowns[idx]}</div>
-                        <div class="font-bold text-lg">${student.name}</div>
-                        <div class="text-sm opacity-90">3-${student.classNum}반 ${student.number}번</div>
-                        <div class="text-base mt-1">${student.score}점 ⭐</div>
-                    </div>
-                `).join('');
-            } else {
-                topPerformersEl.innerHTML = `<div class="bg-white/20 p-4 rounded-lg">아직 기록이 없습니다</div>`;
-            }
-        };
-
-        const updateAll = () => {
-            updateStats();
-            updateTopPerformers();
-            renderTabs();
-            renderClassView(activeClassKey);
-        };
-        
-        // --- EVENT HANDLERS ---
-        window.showClass = (classKey) => {
-            activeClassKey = classKey;
-            // Update tab styles
-            document.querySelectorAll('.tab-btn').forEach(btn => {
-                if (btn.dataset.key === activeClassKey) {
-                    btn.classList.add('bg-white', 'text-red-500', 'shadow-sm');
-                    btn.classList.remove('bg-transparent', 'text-gray-600', 'hover:bg-white/60');
+                titleEl.textContent = config.title;
+                messageEl.innerHTML = config.message;
+                
+                if (config.showInput) {
+                    inputEl.style.display = 'block';
+                    inputEl.value = config.initialValue || '';
+                    inputEl.placeholder = config.placeholder || '';
                 } else {
-                    btn.classList.remove('bg-white', 'text-red-500', 'shadow-sm');
-                    btn.classList.add('bg-transparent', 'text-gray-600', 'hover:bg-white/60');
+                    inputEl.style.display = 'none';
                 }
+                
+                modal.style.display = 'block';
+                
+                const close = (value) => {
+                    modal.style.display = 'none';
+                    // Clone and replace to remove all event listeners at once
+                    confirmBtn.replaceWith(confirmBtn.cloneNode(true));
+                    cancelBtn.replaceWith(cancelBtn.cloneNode(true));
+                    closeBtn.replaceWith(closeBtn.cloneNode(true));
+                    resolve(value);
+                };
+
+                document.getElementById('modal-confirm-btn').onclick = () => close(config.showInput ? inputEl.value : true);
+                document.getElementById('modal-cancel-btn').onclick = () => close(null);
+                document.querySelector('.modal-close').onclick = () => close(null);
+                
+                window.onclick = (event) => {
+                    if (event.target == modal) {
+                        close(null);
+                    }
+                };
             });
-            renderClassView(activeClassKey);
-        };
-        
-        window.handleScoreChange = (classNum, studentNum, change) => {
-            const classKey = `class${classNum}`;
-            const studentKey = `${classKey}-${studentNum}`;
-            const memoInput = document.getElementById(`memo-${studentKey}`);
-            const memoText = memoInput.value.trim();
+        }
 
-            scores[studentKey] = (scores[studentKey] || 0) + change;
+        function loadData() {
+            try {
+                studentScores = JSON.parse(localStorage.getItem('studentScores_v2') || '{}');
+                studentMemos = JSON.parse(localStorage.getItem('studentMemos_v2') || '{}');
+            } catch (e) {
+                console.error("데이터 로딩 실패:", e);
+                studentScores = {};
+                studentMemos = {};
+            }
+        }
 
-            if (memoText) {
-                if (!memos[studentKey]) {
-                    memos[studentKey] = [];
-                }
-                memos[studentKey].push({
+        function saveData() {
+            try {
+                localStorage.setItem('studentScores_v2', JSON.stringify(studentScores));
+                localStorage.setItem('studentMemos_v2', JSON.stringify(studentMemos));
+            } catch (e) {
+                console.error("데이터 저장 실패:", e);
+            }
+        }
+
+        function getStars(score) {
+            const positiveScore = Math.max(0, score);
+            return '⭐'.repeat(positiveScore);
+        }
+
+        function showClass(className) {
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.class-content').forEach(content => content.classList.remove('active'));
+            
+            const targetTab = document.querySelector(`button[onclick="showClass('${className}')"]`);
+            if(targetTab) targetTab.classList.add('active');
+            
+            const targetContent = document.getElementById(className);
+            if(targetContent) targetContent.classList.add('active');
+        }
+
+        function updateScore(classNum, studentNum, change, memo) {
+            const key = `class${classNum}-${studentNum}`;
+            
+            if (!studentScores[key]) studentScores[key] = 0;
+            if (!studentMemos[key]) studentMemos[key] = [];
+
+            studentScores[key] += change;
+            
+            if (memo && memo.trim()) {
+                studentMemos[key].unshift({
                     date: new Date().toLocaleString('ko-KR'),
-                    text: memoText,
+                    text: memo,
                     change: change,
                     recorder: '선생님'
                 });
             }
-            
-            memoInput.value = '';
-            updateAll(); // Re-render everything to show changes
-        };
 
-        window.handleExport = async (classNum) => {
-            const exportBtn = document.getElementById(`exportBtn-${classNum}`);
-            const btnText = exportBtn.querySelector('span');
-            const exportMsg = document.getElementById(`exportMsg-${classNum}`);
+            updateDisplay();
+            saveData();
+        }
+
+        function updateDisplay() {
+            Object.keys(studentsData).forEach(className => {
+                const classNum = className.replace('class', '');
+                studentsData[className].forEach(student => {
+                    updateStudentCard(classNum, student.number);
+                });
+                updateClassTotal(classNum);
+            });
+            updateStats();
+            updateTopPerformers();
+        }
+
+        function updateStudentCard(classNum, studentNum) {
+            const key = `class${classNum}-${studentNum}`;
+            const score = studentScores[key] || 0;
+            const memos = studentMemos[key] || [];
+
+            const scoreEl = document.getElementById(`score-${key}`);
+            const starsEl = document.getElementById(`stars-${key}`);
+            const memosEl = document.getElementById(`memos-${key}`);
+
+            if (scoreEl) scoreEl.textContent = score;
+            if (starsEl) starsEl.textContent = getStars(score);
             
-            if (!GOOGLE_SCRIPT_URL) {
-                alert('Google Apps Script URL이 설정되지 않았습니다.');
-                return;
+            if (memosEl) {
+                memosEl.innerHTML = memos.map((memo, index) => {
+                    const sign = memo.change > 0 ? '+' : '';
+                    const negClass = memo.change < 0 ? 'negative' : '';
+                    return `<div class="memo-item ${negClass}">
+                        <div class="memo-header">
+                            <div class="memo-date">${memo.date} (${memo.recorder})</div>
+                            <button class="memo-delete-btn" onclick="deleteMemo(${classNum}, ${studentNum}, ${index})" title="메모 삭제">×</button>
+                        </div>
+                        <div class="memo-text">${sign}${memo.change}점: ${memo.text}</div>
+                    </div>`;
+                }).join('');
             }
+        }
 
-            exportBtn.disabled = true;
-            btnText.textContent = '내보내는 중...';
-            exportMsg.textContent = '';
+        function updateClassTotal(classNum) {
+            const total = studentsData[`class${classNum}`].reduce((sum, student) => {
+                const key = `class${classNum}-${student.number}`;
+                return sum + (studentScores[key] || 0);
+            }, 0);
+            const totalEl = document.getElementById(`class${classNum}-total`);
+            if (totalEl) totalEl.textContent = total;
+        }
 
-            const classKey = `class${classNum}`;
-            const students = studentsData[classKey];
-            const records = [];
-            students.forEach(student => {
-                const studentKey = `${classKey}-${student.number}`;
-                const studentMemos = memos[studentKey] || [];
-                studentMemos.forEach(memo => {
-                    records.push({
-                        ...memo,
-                        studentName: student.name,
-                        studentNumber: student.number,
-                    });
+        function updateStats() {
+            let totalStickers = 0;
+            let classTotals = {};
+            let totalStudents = 0;
+
+            Object.keys(studentsData).forEach(className => {
+                const classNum = className.replace('class', '');
+                totalStudents += studentsData[className].length;
+                const classTotal = studentsData[className].reduce((sum, student) => {
+                    const score = studentScores[`class${classNum}-${student.number}`] || 0;
+                    return sum + score;
+                }, 0);
+                totalStickers += classTotal;
+                classTotals[classNum] = classTotal;
+            });
+
+            const topClassNum = Object.keys(classTotals).length > 0 ? 
+                                Object.keys(classTotals).reduce((a, b) => classTotals[a] > classTotals[b] ? a : b) : null;
+            
+            document.getElementById('totalStudents').textContent = totalStudents;
+            document.getElementById('totalStickers').textContent = totalStickers;
+            document.getElementById('topClass').textContent = topClassNum && classTotals[topClassNum] > 0 ? `3-${topClassNum}반` : '-';
+        }
+
+        function updateTopPerformers() {
+            const allStudents = [];
+            Object.keys(studentsData).forEach(className => {
+                const classNum = className.replace('class', '');
+                studentsData[className].forEach(student => {
+                    const score = studentScores[`class${classNum}-${student.number}`] || 0;
+                    if (score > 0) {
+                        allStudents.push({ name: student.name, score, class: classNum, number: student.number });
+                    }
                 });
             });
 
-            if (records.length === 0) {
-                exportMsg.textContent = '내보낼 데이터가 없습니다.';
-                exportBtn.disabled = false;
-                btnText.textContent = '시트로 내보내기';
-                setTimeout(() => { exportMsg.textContent = ''; }, 3000);
-                return;
+            allStudents.sort((a, b) => b.score - a.score);
+            const top3 = allStudents.slice(0, 3);
+            const crowns = ['👑', '🥈', '🥉'];
+
+            const html = top3.length > 0 ? 
+                top3.map((student, idx) => `
+                    <div class="top-item">
+                        <div class="crown">${crowns[idx]}</div>
+                        <div><strong>${student.name}</strong></div>
+                        <div>3-${student.class}반 ${student.number}번</div>
+                        <div>${student.score}점 ⭐</div>
+                    </div>
+                `).join('') : 
+                '<div class="top-item">아직 기록이 없습니다</div>';
+
+            document.getElementById('topPerformers').innerHTML = html;
+        }
+
+        function createDynamicContent() {
+            const tabsContainer = document.getElementById('classTabsContainer');
+            const contentContainer = document.getElementById('classContentContainer');
+            
+            tabsContainer.innerHTML = '';
+            contentContainer.innerHTML = '';
+
+            Object.keys(studentsData).forEach((className, index) => {
+                const classNum = className.replace('class', '');
+                const isActive = index === 0;
+
+                // Create Tab
+                const tab = document.createElement('button');
+                tab.className = `tab ${isActive ? 'active' : ''}`;
+                tab.textContent = `3학년 ${classNum}반`;
+                tab.onclick = () => showClass(className);
+                tabsContainer.appendChild(tab);
+                
+                // Create Content
+                const contentDiv = document.createElement('div');
+                contentDiv.id = className;
+                contentDiv.className = `class-content ${isActive ? 'active' : ''}`;
+                contentDiv.innerHTML = `
+                    <div class="class-header">
+                        <div class="class-title">3학년 ${classNum}반</div>
+                        <div class="class-header-controls">
+                            <button class="header-btn class-export-btn" onclick="exportToSheet(${classNum}, this)">내보내기 🚀</button>
+                            <div class="class-total">반 총합: <span id="${className}-total">0</span>점</div>
+                        </div>
+                    </div>
+                    <div class="students-grid" id="students-${className}"></div>
+                `;
+                contentContainer.appendChild(contentDiv);
+            });
+        }
+
+        function createStudentCards() {
+            Object.keys(studentsData).forEach(className => {
+                const classNum = className.replace('class', '');
+                const container = document.getElementById(`students-${className}`);
+                if (!container) return;
+                
+                container.innerHTML = studentsData[className].map(student => {
+                    const key = `class${classNum}-${student.number}`;
+                    return `
+                        <div class="student-card">
+                            <div class="student-info">
+                                <div class="student-name">${student.name}</div>
+                                <div class="student-number">${student.number}번</div>
+                            </div>
+                            <div class="score-section">
+                                <div class="score-display">
+                                    <div class="stars" id="stars-${key}"></div>
+                                    <div class="score-number" id="score-${key}">0</div>
+                                </div>
+                                <div class="score-controls">
+                                    <button class="score-btn plus" onclick="addPoint(${classNum}, ${student.number})">+</button>
+                                    <button class="score-btn minus" onclick="subtractPoint(${classNum}, ${student.number})">-</button>
+                                </div>
+                            </div>
+                            <div class="memo-section">
+                                <input type="text" class="memo-input" placeholder="점수 변경 이유를 입력하세요..." id="memo-input-${key}" onkeydown="if(event.key==='Enter') addPoint(${classNum}, ${student.number}, this)">
+                                <div class="memo-list" id="memos-${key}"></div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            });
+        }
+
+        function addPoint(classNum, studentNum, inputElement) {
+            const key = `class${classNum}-${studentNum}`;
+            const memoInput = inputElement || document.getElementById(`memo-input-${key}`);
+            const memo = memoInput ? memoInput.value.trim() : '';
+            updateScore(classNum, studentNum, 1, memo || '칭찬');
+            if (memoInput) memoInput.value = '';
+        }
+
+        async function subtractPoint(classNum, studentNum) {
+            const memo = await showModal({
+                title: '점수 차감',
+                message: '점수를 차감하는 이유를 반드시 입력해야 합니다.',
+                showInput: true,
+                placeholder: '이유를 입력하세요...'
+            });
+            
+            if (memo) {
+                updateScore(classNum, studentNum, -1, memo);
             }
+        }
 
-            try {
-                const response = await fetch(GOOGLE_SCRIPT_URL, {
-                    method: 'POST',
-                    body: JSON.stringify({
-                        className: `3학년 ${classNum}반`,
-                        records: records,
-                    }),
-                });
+        async function deleteMemo(classNum, studentNum, memoIndex) {
+            const key = `class${classNum}-${studentNum}`;
+            const memos = studentMemos[key];
+            if (!memos || !memos[memoIndex]) return;
 
-                if (!response.ok) throw new Error(`네트워크 오류: ${response.statusText}`);
+            const memoToDelete = memos[memoIndex];
+            
+            const confirmed = await showModal({
+                title: '메모 삭제 확인',
+                message: `'${memoToDelete.text}' 메모를 삭제하시겠습니까?<br>연결된 점수(${memoToDelete.change > 0 ? '+' : ''}${memoToDelete.change}점)도 함께 복원됩니다.`,
+                showInput: false
+            });
 
-                const result = await response.json();
-                if (result.status === 'success') {
-                    exportMsg.textContent = result.message;
-                } else {
-                    throw new Error(result.message);
+            if (confirmed) {
+                if (studentScores[key] !== undefined) {
+                    studentScores[key] -= memoToDelete.change;
                 }
-            } catch (error) {
-                console.error('Error exporting data:', error);
-                exportMsg.textContent = `오류: ${error.message}`;
-            } finally {
-                exportBtn.disabled = false;
-                btnText.textContent = '시트로 내보내기';
-                setTimeout(() => { exportMsg.textContent = ''; }, 7000);
+                memos.splice(memoIndex, 1);
+                updateDisplay();
+                saveData();
             }
-        };
+        }
 
-        // --- INITIALIZATION ---
-        const init = () => {
+        async function resetData() {
+            const confirmationText = '초기화';
+            const userInput = await showModal({
+                title: '⚠️ 전체 초기화',
+                message: `정말로 모든 학생의 점수와 메모를 초기화하시겠습니까? 이 작업은 되돌릴 수 없습니다.<br><br>계속하려면 '<b>${confirmationText}</b>'라고 입력하세요.`,
+                showInput: true,
+                placeholder: `'${confirmationText}'를 입력`
+            });
+            
+            if (userInput === confirmationText) {
+                studentScores = {};
+                studentMemos = {};
+                saveData();
+                updateDisplay();
+                await showModal({ title: '완료', message: '모든 데이터가 성공적으로 초기화되었습니다.', showInput: false, });
+            } else if (userInput !== null) {
+                await showModal({ title: '취소', message: '입력이 일치하지 않아 초기화가 취소되었습니다.', showInput: false, });
+            }
+        }
+        
+        async function showSettingsModal(promptFirst = false) {
+            const currentUrl = localStorage.getItem('webAppUrl');
+
+            let message = `Google Sheets로 내보내려면 Google Apps Script <b>웹 앱 URL</b>이 필요합니다.<br>
+                         ✅ URL은 항상 '<b>.../exec</b>'로 끝나야 합니다.<br><br>
+                         <b>⚠️ 중요:</b> 스크립트를 수정했다면, 반드시 '배포' > '배포 관리'에서 <b>'새 버전'</b>으로 재배포하고, '액세스 권한이 있는 사용자'를 '<b>모든 사용자</b>'로 설정해야 합니다. 그렇지 않으면 오류가 발생합니다.`;
+
+            if (promptFirst) {
+                message = '<strong>내보내기를 계속하려면 먼저 웹 앱 URL을 설정해야 합니다.</strong><br><br>' + message;
+            }
+            
+            const newUrl = await showModal({
+                title: '시트 내보내기 설정',
+                message: message,
+                showInput: true,
+                placeholder: 'https://script.google.com/macros/s/.../exec',
+                initialValue: currentUrl || ''
+            });
+
+            if (newUrl === null) return null;
+
+            if (newUrl && newUrl.trim() !== '') {
+                if (!newUrl.trim().endsWith('/exec')) {
+                     await showModal({
+                        title: '⚠️ 잘못된 URL',
+                        message: `유효하지 않은 URL 형식입니다. Google Apps Script <b>웹 앱 배포 URL</b>을 입력해야 합니다.<br><br>
+                                  ✅ 올바른 주소는 항상 '<b>.../exec</b>'로 끝납니다.`,
+                        showInput: false,
+                    });
+                    return null;
+                }
+                localStorage.setItem('webAppUrl', newUrl.trim());
+                await showModal({ title: '저장 완료', message: '웹 앱 URL이 성공적으로 저장되었습니다.', showInput: false });
+                return newUrl.trim();
+            } else if (newUrl !== null) { // User confirmed with empty input
+                localStorage.removeItem('webAppUrl');
+                await showModal({ title: '삭제 완료', message: '웹 앱 URL이 삭제되었습니다.', showInput: false });
+                return '';
+            }
+            return null; // User cancelled
+        }
+
+        async function exportToSheet(classNum = null, btnElement) {
+            let webAppUrl = localStorage.getItem('webAppUrl');
+
+            if (!webAppUrl) {
+                const newUrl = await showSettingsModal(true);
+                 if (newUrl) {
+                    webAppUrl = newUrl;
+                 } else {
+                    return; // User cancelled the settings modal
+                 }
+            }
+            
+            const originalBtnHTML = btnElement.innerHTML;
+            btnElement.disabled = true;
+            btnElement.innerHTML = '내보내는 중...';
+
+            const exportData = [];
+            const timestamp = new Date().toLocaleString('ko-KR');
+            const targetClasses = classNum ? [`class${classNum}`] : Object.keys(studentsData);
+            const sheetName = classNum ? `3학년 ${classNum}반` : '전체 현황';
+
+
+            targetClasses.forEach(className => {
+                const currentClassNum = className.replace('class', '');
+                studentsData[className].forEach(student => {
+                    const key = `class${currentClassNum}-${student.number}`;
+                    const score = studentScores[key] || 0;
+                    const memos = studentMemos[key] || [];
+
+                    const memoTexts = memos.map(memo => 
+                        `[${memo.date}] (${memo.change > 0 ? '+' : ''}${memo.change}점) ${memo.text}`
+                    ).join('\n');
+                    
+                    exportData.push({ '반': `${currentClassNum}반`, '번호': student.number, '이름': student.name, '점수': score, '메모': memoTexts });
+                });
+            });
+            
+            try {
+                const response = await fetch(webAppUrl, {
+                    method: 'POST',
+                    mode: 'cors',
+                    cache: 'no-cache',
+                    redirect: 'follow',
+                    body: JSON.stringify({ 
+                        timestamp: timestamp, 
+                        sheetName: sheetName,
+                        data: exportData 
+                    })
+                });
+                
+                // Google Apps Script redirects, so we can't easily check response.ok.
+                // Instead, we assume success if no network error is thrown, 
+                // as the detailed error is handled on the server side.
+                // A more robust solution might involve the script returning a specific JSONP response.
+                if (response.type === 'opaque' || response.ok) {
+                   await showModal({ title: '성공', message: `'${sheetName}' 데이터를 성공적으로 시트로 내보냈습니다!`, showInput: false });
+                } else {
+                   throw new Error(`서버 응답 오류 (${response.status})`);
+                }
+
+            } catch (error) {
+                console.error('시트 내보내기 오류:', error);
+                await showModal({ 
+                    title: '내보내기 오류 (Failed to fetch)', 
+                    message: `시트로 내보내는 중 네트워크 오류가 발생했습니다.<br><br>
+                              <b>가장 먼저, Google Apps Script 실행 로그에서 실제 오류 원인을 확인해보세요.</b><br>
+                              <ol style="padding-left: 20px; text-align: left; margin-bottom: 15px;">
+                                  <li>오류 발생 후, Apps Script 편집기로 이동하세요.</li>
+                                  <li>왼쪽 메뉴에서 <b>'실행' (&#9201;)</b> 아이콘을 클릭하세요.</li>
+                                  <li>가장 최근의 실행 기록을 찾아 '상태'가 '실패'인지 확인하고, 해당 행을 클릭하여 로그를 살펴보세요. 로그에 나타난 오류 메시지가 문제 해결의 가장 중요한 단서입니다.</li>
+                              </ol>
+                              <b>로그 확인 후에도 문제가 해결되지 않으면, 아래 단계를 다시 시도해보세요. 가장 흔한 원인은 권한 문제입니다.</b><br>
+                              <ol style="padding-left: 20px; text-align: left;">
+                                  <li>Apps Script 편집기에서 오른쪽 상단의 파란색 <b>'배포'</b> 버튼을 클릭하세요.</li>
+                                  <li><b>'배포 관리'</b>를 선택하세요.</li>
+                                  <li>활성화된 배포 옆의 <b>수정(✏️)</b> 아이콘을 클릭하세요.</li>
+                                  <li>'버전' 드롭다운에서 <b>'새 버전'</b>을 선택합니다. <b>(⚠️ 가장 중요!)</b></li>
+                                  <li>'액세스 권한이 있는 사용자'가 '<b>모든 사용자</b>'로 되어 있는지 다시 확인하세요.</li>
+                                  <li>마지막으로 파란색 <b>'배포'</b> 버튼을 누르면 완료됩니다.</li>
+                              </ol>`, 
+                    showInput: false 
+                });
+            } finally {
+                btnElement.disabled = false;
+                btnElement.innerHTML = originalBtnHTML;
+            }
+        }
+
+        function init() {
             loadData();
-            updateAll();
-        };
+            createDynamicContent();
+            createStudentCards();
+            updateDisplay();
 
-        init();
-    });
+            document.getElementById('resetBtn').addEventListener('click', resetData);
+            document.getElementById('exportBtn').addEventListener('click', (event) => exportToSheet(null, event.currentTarget));
+            document.getElementById('settingsBtn').addEventListener('click', () => showSettingsModal(false));
+            
+            // Periodically save data to prevent loss
+            setInterval(saveData, 15000); 
+            window.addEventListener('beforeunload', saveData);
+        }
+
+        document.addEventListener('DOMContentLoaded', init);
     </script>
 </body>
 </html>
